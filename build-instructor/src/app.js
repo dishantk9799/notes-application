@@ -36,7 +36,7 @@ app.post('/api/notes', async (req, res) => {
 });
 
 // ---- Read note ----
-app.get('api/notes', async (req, res) => {
+app.get('/api/notes', async (req, res) => {
     try {
 
         const notes = await NoteModel.find();
@@ -53,19 +53,19 @@ app.get('api/notes', async (req, res) => {
 });
 
 // ---- Update note ----
-app.patch('api/notes/:id', async (req, res) => {
+app.patch('/api/notes/:id', async (req, res) => {
     try {
         // ---- Data from user ----
         const { id } = req.params;
         const { description } = req.body;
 
         // ---- Validation ----
-        const note = NoteModel.findById(id);
-        if (!note) return res.status(404).json({ error: "Note not found" })
+        const note = await NoteModel.findById(id);
+        if (!note) return res.status(404).json({ error: "Note not found" });
         if (!description) return res.status(400).json({ error: "Description is required" });
         if (description.trim().length < 10) return res.status(400).json({ error: "Description must be at least 10 character long" });
 
-        // ---- Updation description
+        // ---- Updation description ----
         note.description = description;
         await note.save();
 
@@ -76,7 +76,30 @@ app.patch('api/notes/:id', async (req, res) => {
 
     } catch (error) {
         console.log("Error in Update note:", error);
-        return res.status(500).json({ error: "Internal server error" })
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
+
+// ---- Delete note ----
+app.delete('/api/notes/:id', async (req, res) => {
+    try {
+        // ---- Data from user ----
+        const { id } = req.params;
+
+        // ---- Validation ----
+        const note = await NoteModel.findById(id);
+        if (!note) return res.status(404).json({ error: "Note not found" });
+
+        // ---- Deleting note ----
+        await NoteModel.findByIdAndDelete(id);
+
+        return res.status(200).json({
+            message: "Note deleted successfully",
+        });
+
+    } catch (error) {
+        console.log("Error in Delete note:", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
 });
 
