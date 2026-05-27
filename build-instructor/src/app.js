@@ -1,7 +1,37 @@
 import express from 'express';
+import { NoteModel } from './models/notes.model.js';
 
 
 const app = express();
 
+app.use(express.json());
+
+app.post('/api/notes', async (req, res) => {
+    try {
+        // ---- Data from user ----
+        const { title, description } = req.body;
+
+        // ---- Validation ----
+        if (!title) return res.status(400).json({ error: "Title is required" });
+        if (!description) return res.status(400).json({ error: "Description is required" });
+        if (title.trim().length < 3) return res.status(400).json({ error: "Title must be at least 3 character long" });
+        if (description.trim().length < 10) return res.status(400).json({ error: "Description must be at least 10 character long" });
+
+        // ---- If validation passes create the note ----
+        const newNote = await NoteModel.create({
+            title,
+            description
+        });
+
+        return res.status(201).json({
+            message: "Note is created successfully",
+            note: newNote
+        });
+
+    } catch (error) {
+        console.log("Error in Create note:", error);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+});
 
 export default app;

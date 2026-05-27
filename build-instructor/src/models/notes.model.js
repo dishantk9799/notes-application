@@ -5,4 +5,4 @@ const noteSchema = new mongoose.Schema({
     description: String,
 });
 
-export const noteModel = mongoose.model('notes', noteSchema);
+export const NoteModel = mongoose.model('notes', noteSchema);
