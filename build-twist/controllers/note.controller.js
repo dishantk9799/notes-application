@@ -31,6 +31,13 @@ export const createNote = async (req, res) => {
 // ---- Read note ----
 export const readNote = async (req, res) => {
     try {
+        // ---- Find all notes from the database ----
+        const notes = await Note.find();
+
+        return res.status(200).json({
+            message: "Notes fetched successfully",
+            notes
+        });
 
     } catch (error) {
         console.log("Error in Read note:", error);
